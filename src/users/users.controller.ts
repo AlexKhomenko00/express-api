@@ -1,5 +1,6 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { BaseController } from "../common/base.controller";
+import { HTTPError } from "../errors/http-error.class";
 import { LoggerService } from "../logger/logger.service";
 
 export class UserController extends BaseController {
@@ -20,11 +21,11 @@ export class UserController extends BaseController {
 		]);
 	}
 
-	register(req: Request, res: Response) {
+	register(req: Request, res: Response, next: NextFunction) {
 		this.ok(res, "Registered");
 	}
 
-	login(req: Request, res: Response) {
-		this.ok(res, "Logged in");
+	login(req: Request, res: Response, next: NextFunction) {
+		next(new HTTPError(401, "Error in authorization", "login"));
 	}
 }

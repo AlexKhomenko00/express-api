@@ -1,19 +1,22 @@
 import "reflect-metadata";
 import { Container, ContainerModule, interfaces } from "inversify";
 
-import { App } from "./app";
+import { TYPES } from "./types";
+
 import { IExeptionFilter } from "./errors/exeption.filter.interface";
-import { ExeptionFilter } from "./errors/exeption.filters";
+
+import { IUser } from "./users/user.interface";
 import { ILogger } from "./logger/logger.interface";
 
+import { App } from "./app";
 import { LoggerService } from "./logger/logger.service";
-import { TYPES } from "./types";
+import { ExeptionFilter } from "./errors/exeption.filters";
 import { UserController } from "./users/users.controller";
 
 export const appBingings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<ILogger>(TYPES.ILogger).to(LoggerService);
 	bind<IExeptionFilter>(TYPES.ExeptionFilter).to(ExeptionFilter);
-	bind<UserController>(TYPES.UserController).to(UserController);
+	bind<IUser>(TYPES.UserController).to(UserController);
 	bind<App>(TYPES.Application).to(App);
 });
 

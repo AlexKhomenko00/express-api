@@ -7,9 +7,10 @@ import { HTTPError } from "../errors/http-error.class";
 import { ILogger } from "../logger/logger.interface";
 import { LoggerService } from "../logger/logger.service";
 import { TYPES } from "../types";
+import { IUser } from "./user.interface";
 
 @injectable()
-export class UserController extends BaseController {
+export class UserController extends BaseController implements IUser {
 	constructor(@inject(TYPES.ILogger) private loggerService: ILogger) {
 		super(loggerService);
 

@@ -13,9 +13,9 @@ import { LoggerService } from './logger/logger.service';
 import { ExeptionFilter } from './errors/exeption.filters';
 import { UserController } from './users/users.controller';
 
-export interface IBootstrapReturn{
-    appContainer: Container,
-    app: App
+export interface IBootstrapReturn {
+	appContainer: Container;
+	app: App;
 }
 
 export const appBingings = new ContainerModule((bind: interfaces.Bind) => {
@@ -25,7 +25,7 @@ export const appBingings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<App>(TYPES.Application).to(App);
 });
 
-function bootstrap():IBootstrapReturn {
+function bootstrap(): IBootstrapReturn {
 	const appContainer = new Container();
 
 	appContainer.load(appBingings);

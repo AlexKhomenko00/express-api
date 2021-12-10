@@ -1,14 +1,14 @@
-import "reflect-metadata";
-import express, { Express } from "express";
-import { Server } from "http";
-import { inject, injectable } from "inversify";
+import 'reflect-metadata';
+import express, { Express } from 'express';
+import { Server } from 'http';
+import { inject, injectable } from 'inversify';
 
-import { ExeptionFilter } from "./errors/exeption.filters";
-import { ILogger } from "./logger/logger.interface";
+import { ExeptionFilter } from './errors/exeption.filters';
+import { ILogger } from './logger/logger.interface';
 
-import { TYPES } from "./types";
+import { TYPES } from './types';
 
-import { UserController } from "./users/users.controller";
+import { UserController } from './users/users.controller';
 
 @injectable()
 export class App {
@@ -19,20 +19,20 @@ export class App {
 	constructor(
 		@inject(TYPES.ILogger) private logger: ILogger,
 		@inject(TYPES.UserController) private userController: UserController,
-		@inject(TYPES.ExeptionFilter) private exeptionFilter: ExeptionFilter
+		@inject(TYPES.ExeptionFilter) private exeptionFilter: ExeptionFilter,
 	) {
 		this.app = express();
 		this.port = 8000;
 	}
 
-	useRoutes() {
-		this.app.use("/users", this.userController.router);
+	useRoutes(): void {
+		this.app.use('/users', this.userController.router);
 	}
-	useExeptionFilter() {
+	useExeptionFilter(): void {
 		this.app.use(this.exeptionFilter.catch.bind(this.exeptionFilter));
 	}
 
-	public async init() {
+	public async init(): Promise<void> {
 		this.useRoutes();
 		this.useExeptionFilter();
 

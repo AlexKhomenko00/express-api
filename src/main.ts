@@ -1,17 +1,22 @@
-import "reflect-metadata";
-import { Container, ContainerModule, interfaces } from "inversify";
+import 'reflect-metadata';
+import { Container, ContainerModule, interfaces } from 'inversify';
 
-import { TYPES } from "./types";
+import { TYPES } from './types';
 
-import { IExeptionFilter } from "./errors/exeption.filter.interface";
+import { IExeptionFilter } from './errors/exeption.filter.interface';
 
-import { IUser } from "./users/user.interface";
-import { ILogger } from "./logger/logger.interface";
+import { IUser } from './users/user.interface';
+import { ILogger } from './logger/logger.interface';
 
-import { App } from "./app";
-import { LoggerService } from "./logger/logger.service";
-import { ExeptionFilter } from "./errors/exeption.filters";
-import { UserController } from "./users/users.controller";
+import { App } from './app';
+import { LoggerService } from './logger/logger.service';
+import { ExeptionFilter } from './errors/exeption.filters';
+import { UserController } from './users/users.controller';
+
+export interface IBootstrapReturn{
+    appContainer: Container,
+    app: App
+}
 
 export const appBingings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<ILogger>(TYPES.ILogger).to(LoggerService);
@@ -20,7 +25,7 @@ export const appBingings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<App>(TYPES.Application).to(App);
 });
 
-function bootstrap() {
+function bootstrap():IBootstrapReturn {
 	const appContainer = new Container();
 
 	appContainer.load(appBingings);

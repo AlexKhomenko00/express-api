@@ -1,4 +1,4 @@
-import { Logger } from "tslog";
+import { Logger } from 'tslog';
 
 export interface ILogger {
 	logger: Logger;

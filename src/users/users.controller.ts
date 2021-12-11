@@ -12,6 +12,7 @@ import { UserRegisterDto } from './dto/user-register.dto';
 
 import { BaseController } from '../common/base.controller';
 import { HTTPError } from '../errors/http-error.class';
+import { User } from './user.entity';
 
 @injectable()
 export class UserController extends BaseController implements IUser {
@@ -32,12 +33,18 @@ export class UserController extends BaseController implements IUser {
 		]);
 	}
 
-	register(req: Request<{}, {}, UserRegisterDto>, res: Response, next: NextFunction): void {
-		this.ok(res, 'Registered');
+	async register(
+		{ body }: Request<{}, {}, UserRegisterDto>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		const newUser = new User(body.email, body.name);
+		await newUser.setPassoword(body.password);
+
+		this.ok(res, { user: newUser });
 	}
 
-	login(req: Request<{}, {}, UserLoginDto>, res: Response, next: NextFunction): void {
-		console.log(req.body);
+	login({ body }: Request<{}, {}, UserLoginDto>, res: Response, next: NextFunction): void {
 		next(new HTTPError(401, 'Error in authorization', 'login'));
 	}
 }

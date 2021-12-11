@@ -1,5 +1,5 @@
 export class UserRegisterDto {
-	emain: string;
+	email: string;
 	password: string;
 	name: string;
 }

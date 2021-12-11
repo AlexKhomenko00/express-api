@@ -1,4 +1,4 @@
 export class UserLoginDto {
-	emain: string;
+	email: string;
 	password: string;
 }

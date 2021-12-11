@@ -1,12 +1,14 @@
 import 'reflect-metadata';
 import express, { Express } from 'express';
-import { Server } from 'http';
+import { json } from 'body-parser';
+
 import { inject, injectable } from 'inversify';
 
 import { ExeptionFilter } from './errors/exeption.filters';
 import { ILogger } from './logger/logger.interface';
 
 import { TYPES } from './types';
+import { Server } from 'http';
 
 import { UserController } from './users/users.controller';
 
@@ -25,14 +27,20 @@ export class App {
 		this.port = 8000;
 	}
 
+	useMiddleware(): void {
+		this.app.use(json());
+	}
+
 	useRoutes(): void {
 		this.app.use('/users', this.userController.router);
 	}
+
 	useExeptionFilter(): void {
 		this.app.use(this.exeptionFilter.catch.bind(this.exeptionFilter));
 	}
 
 	public async init(): Promise<void> {
+		this.useMiddleware();
 		this.useRoutes();
 		this.useExeptionFilter();
 

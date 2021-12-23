@@ -17,7 +17,9 @@ export class UserService implements IUserService {
 
 	async createUser({ email, name, password }: UserRegisterDto): Promise<User | null> {
 		const newUser = new User(email, name);
-		await newUser.setPassoword(password);
+		const salt = this.configService.get('SALT');
+
+		await newUser.setPassoword(password, Number(salt));
 		return null;
 	}
 

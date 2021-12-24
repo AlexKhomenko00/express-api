@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { inject, injectable } from 'inversify';
+import { UserModel } from '@prisma/client';
 
 import { TYPES } from '../types';
 
@@ -19,12 +20,19 @@ export class UserService implements IUserService {
 		@inject(TYPES.UserRepository) private userRepository: IUsersRepository,
 	) {}
 
-	async createUser({ email, name, password }: UserRegisterDto): Promise<User | null> {
+	async createUser({ email, name, password }: UserRegisterDto): Promise<UserModel | null> {
+		const existedUser = await this.userRepository.find(email);
+
+		if (existedUser) {
+			return null;
+		}
+
 		const newUser = new User(email, name);
 		const salt = this.configService.get('SALT');
 
 		await newUser.setPassword(password, Number(salt));
-		return null;
+
+		return this.userRepository.create(newUser);
 	}
 
 	async validateUser(dto: UserLoginDto): Promise<boolean> {

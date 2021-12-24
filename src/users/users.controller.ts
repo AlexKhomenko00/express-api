@@ -17,6 +17,7 @@ import { ValidateMiddleware } from '../common/validate.middleware';
 
 import { BaseController } from '../common/base.controller';
 import { HTTPError } from '../errors/http-error.class';
+import { AuthGuard } from '../common/auth.guard';
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
@@ -44,7 +45,7 @@ export class UserController extends BaseController implements IUserController {
 				path: '/info',
 				method: 'get',
 				func: this.info,
-				middlewares: [],
+				middlewares: [new AuthGuard()],
 			},
 		]);
 	}
@@ -80,11 +81,18 @@ export class UserController extends BaseController implements IUserController {
 	}
 
 	async info(
-		{ user }: Request<{}, {}, UserLoginDto>,
+		{ user: userEmail }: Request<{}, {}, UserLoginDto>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		this.ok(res, { email: user });
+		const user = await this.userService.getUser(userEmail);
+
+		if (!user) {
+			this.send(res, 401, 'User not found');
+			return;
+		}
+
+		this.ok(res, { id: user.id, email: user.email });
 	}
 
 	private signJWT(email: string, secret: string): Promise<string> {

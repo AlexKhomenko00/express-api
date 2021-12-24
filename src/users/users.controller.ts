@@ -1,15 +1,17 @@
 import 'reflect-metadata';
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
+import { sign } from 'jsonwebtoken';
 
 import { TYPES } from '../types';
+
+import { UserLoginDto } from './dto/user-login.dto';
+import { UserRegisterDto } from './dto/user-register.dto';
 
 import { ILogger } from '../logger/logger.interface';
 import { IUserController } from './users.controller.interface';
 import { IUserService } from './users.service.interface';
-
-import { UserLoginDto } from './dto/user-login.dto';
-import { UserRegisterDto } from './dto/user-register.dto';
+import { IConfigService } from '../config/config.service.interface';
 
 import { ValidateMiddleware } from '../common/validate.middleware';
 
@@ -21,6 +23,7 @@ export class UserController extends BaseController implements IUserController {
 	constructor(
 		@inject(TYPES.ILogger) private loggerService: ILogger,
 		@inject(TYPES.UserService) private userService: IUserService,
+		@inject(TYPES.ConfigService) private configService: IConfigService,
 	) {
 		super(loggerService);
 
@@ -36,6 +39,12 @@ export class UserController extends BaseController implements IUserController {
 				method: 'post',
 				func: this.login,
 				middlewares: [new ValidateMiddleware(UserLoginDto)],
+			},
+			{
+				path: '/info',
+				method: 'get',
+				func: this.info,
+				middlewares: [],
 			},
 		]);
 	}
@@ -65,6 +74,32 @@ export class UserController extends BaseController implements IUserController {
 			return next(new HTTPError(401, 'Error in authorization', 'login'));
 		}
 
-		this.ok(res, {});
+		const jwt = await this.signJWT(dto.email, this.configService.get('SECRET'));
+
+		this.ok(res, { jwt });
+	}
+
+	async info(
+		{ user }: Request<{}, {}, UserLoginDto>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		this.ok(res, { email: user });
+	}
+
+	private signJWT(email: string, secret: string): Promise<string> {
+		return new Promise<string>((resolve, reject) => {
+			sign(
+				{ email, iat: Math.floor(Date.now() / 100) },
+				secret,
+				{ algorithm: 'HS256' },
+				(err, token) => {
+					if (err) {
+						reject(err);
+					}
+					resolve(token as string);
+				},
+			);
+		});
 	}
 }

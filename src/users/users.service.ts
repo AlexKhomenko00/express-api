@@ -10,16 +10,20 @@ import { User } from './user.entity';
 
 import { IUserService } from './users.service.interface';
 import { IConfigService } from '../config/config.service.interface';
+import { IUsersRepository } from './users.repository.interface';
 
 @injectable()
 export class UserService implements IUserService {
-	constructor(@inject(TYPES.ConfigService) private configService: IConfigService) {}
+	constructor(
+		@inject(TYPES.ConfigService) private configService: IConfigService,
+		@inject(TYPES.UserRepository) private userRepository: IUsersRepository,
+	) {}
 
 	async createUser({ email, name, password }: UserRegisterDto): Promise<User | null> {
 		const newUser = new User(email, name);
 		const salt = this.configService.get('SALT');
 
-		await newUser.setPassoword(password, Number(salt));
+		await newUser.setPassword(password, Number(salt));
 		return null;
 	}
 

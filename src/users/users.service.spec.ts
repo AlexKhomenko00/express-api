@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { Container } from 'inversify';
 import { UserModel } from '@prisma/client';
 
@@ -26,10 +27,14 @@ const UserRegisterBodyMock: UserRegisterDto = {
 	password: '1',
 };
 
+const UserIDMock = 1;
+
 const container = new Container();
 let configService: IConfigService;
 let usersRepository: IUsersRepository;
 let usersService: IUserService;
+
+let createdUser: UserModel | null;
 
 beforeAll(() => {
 	container.bind<IUserService>(TYPES.UserService).to(UserService);
@@ -49,13 +54,13 @@ describe('User Service', () => {
 				name: user.name,
 				email: user.email,
 				password: user.password,
-				id: 1,
+				id: UserIDMock,
 			}),
 		);
 
-		const createdUser = await usersService.createUser(UserRegisterBodyMock);
+		createdUser = await usersService.createUser(UserRegisterBodyMock);
 
-		expect(createdUser?.id).toEqual(1);
+		expect(createdUser?.id).toEqual(UserIDMock);
 		expect(createdUser?.password).not.toEqual(UserRegisterBodyMock.password);
 	});
 });

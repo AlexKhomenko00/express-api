@@ -2,9 +2,9 @@ import { NextFunction, Request, Response } from 'express';
 
 import { verify } from 'jsonwebtoken';
 
-import { IMiddleWare } from './middleware.inteface';
+import { IMiddleware } from './middleware.inteface';
 
-export class AuthMiddleware implements IMiddleWare {
+export class AuthMiddleware implements IMiddleware {
 	constructor(private secret: string) {}
 
 	execute(req: Request, res: Response, next: NextFunction): void {

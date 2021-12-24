@@ -85,7 +85,7 @@ export class UserController extends BaseController implements IUserController {
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const user = await this.userService.getUser(userEmail);
+		const user = await this.userService.getUserInfo(userEmail);
 
 		if (!user) {
 			this.send(res, 401, 'User not found');
